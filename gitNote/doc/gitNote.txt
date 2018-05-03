@@ -92,3 +92,67 @@ git服务器的搭建：
 	2.git commit -m "delete file"
 	git rm仅删除最新版本文件，误删除时可进行版本回退
 
+	
+7.远程仓库
+	@1.	在用户主目录下查看.ssh/id_rsa id_rsa.pub文件，复制id_rsa.pub公钥内容并添加到Github网站对应位置，
+		自动生成密钥命令：$ssh-keygen -t rsa -C "youremail@example.com"
+		
+	@2.	在GitHub网站网页New repository，并在本地执行git clone git@github.com:justdoitanyway/sample.git克隆远程仓库或者
+		git clone https://github.com/justdoitanyway/sample.git，Git支持多种协议，包括https，但通过ssh支持的原生git协议速度最快
+		
+	@3.查看当前的远程库
+		要查看当前配置有哪些远程仓库，可以用 git remote 命令，它会列出每个远程库的简短名字。在克隆完某个项目后，
+		至少可以看到一个名为 origin 的远程库，Git 默认使用这个名字来标识你所克隆的原始仓库：
+		$ git remote
+		origin
+		也可以加上 -v 选项（译注：此为 --verbose 的简写，取首字母），显示对应的克隆地址：
+		fxb@ubuntu:~/Git/workNote$ git remote -v
+		origin	git@github.com:justdoitanyway/workNote.git (fetch)
+		origin	git@github.com:justdoitanyway/workNote.git (push)
+		
+	@4.添加远程仓库
+		要添加一个新的远程仓库，可以指定一个简单的名字，以便将来引用，运行 git remote add [shortname] [url]
+		$ git remote
+			origin
+		$ git remote add sample git://github.com/paulboone/ticgit.git
+		$ git remote -v
+			origin  git://github.com/schacon/ticgit.git
+			sample  git://github.com/paulboone/ticgit.git
+			
+	@5.从远程仓库抓取数据
+		$ git fetch [remote-name]
+		此命令会到远程仓库中拉取所有你本地仓库中还没有的数据。运行完成后，你就可以在本地访问该远程仓库中的所有分支，将其中某个分支
+		合并到本地，或者只是取出某个分支，一探究竟。，fetch 命令只是将远端的数据拉到本地仓库，并不自动合并到当前工作分支，只有当你
+		确实准备好了，才能手工合并。
+		如果你有一个分支设置为跟踪一个远程分支，可以使用 git pull 命令来自动的抓取然后合并远程分支到当前分支。 这对你来说可能
+		是一个更简单或更舒服的工作流程；默认情况下，git clone 命令会自动设置本地 master 分支跟踪克隆的远程仓库的 master 分支
+		（或不管是什么名字的默认分支）。 运行 git pull 通常会从最初克隆的服务器上抓取数据并自动尝试合并到当前所在的分支。
+		
+	@6.推送数据到远程仓库
+		git push [remote-name] [branch-name]
+		$ git push origin master
+		只有在所克隆的服务器上有写权限，或者同一时刻没有其他人在推数据，这条命令才会如期完成任务。如果在你推数据前，已经有其他人
+		推送了若干更新，那你的推送操作就会被驳回。你必须先把他们的更新抓取到本地，合并到自己的项目中，然后才可以再次推送。
+	@7.查看远程仓库信息
+		我们可以通过命令 git remote show [remote-name] 查看某个远程仓库的详细信息，比如要看所克隆的 origin 仓库，可以运行：
+		$ git remote show origin
+		* remote origin
+		  URL: git://github.com/schacon/ticgit.git
+		  Remote branch merged with 'git pull' while on branch master
+			master
+		  Tracked remote branches
+			master
+			ticgit
+	@8.远程仓库的删除和重命名
+		在新版 Git 中可以用 git remote rename 命令修改某个远程仓库在本地的简称，比如想把 pb 改成 paul，可以这么运行：
+		$ git remote rename pb paul
+		$ git remote
+		origin
+		paul
+		
+		碰到远端仓库服务器迁移，或者原来的克隆镜像不再使用，又或者某个参与者不再贡献代码，那么需要移除对应的远端仓库，
+		可以运行 git remote rm 命令：
+		$ git remote rm paul
+		$ git remote
+		origin
+	
