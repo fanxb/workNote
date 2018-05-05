@@ -1,0 +1,57 @@
+@1.automake
+    Automake is a tool for automatically generating Makefile.in files compliant with the GNU Coding Standards. Automake requires the use of Autoconf.
+    
+    目前automake支持三种目录层次：flat、shallow和deep。
+    1)    flat指的是所有文件都位于同一个目录中。
+    就是所有源文件、头文件以及其他库文件都位于当前目录中，且没有子目录。Termutils就是这一类。
+    
+    2)    shallow指的是主要的源代码都储存在顶层目录，其他各个部分则储存在子目录中。
+    就是主要源文件在当前目录中，而其它一些实现各部分功能的源文件位于各自不同的目录。automake本身就是这一类。
+        
+    3)    deep指的是所有源代码都被储存在子目录中；顶层目录主要包含配置信息。
+    就是所有源文件及自己写的头文件位于当前目录的一个子目录中，而当前目录里没有任何源文件。 GNU cpio和GNU tar就是这一类。
+
+@2.autoconf
+    Autoconf is an extensible package of M4 macros that produce shell scripts to automatically configure software source code packages. These scripts can adapt the packages to many kinds of UNIX-like systems without manual user intervention. Autoconf creates a configuration script for a package from a template file that lists the operating system features that the package can use, in the form of M4 macro calls.
+    
+@3Makefile生成流程图
+                                                       source code
+                                                            |
+                                                            |
+                                                         autoscan
+                                                           \|/
+                                                      configure.scan   
+                                                            |
+                                                            |
+                                                           edit
+                                                           \|/
+           Makefile.am                                 configure.ac--------------------------------        
+                 \                                    /     |                 |                   |
+                  \                                  /      |               aclocal               |
+                   \                                /       |                 |               autoheader
+                    \                              /        |                \|/                 \|/
+                     \_________automake __________/         |             aclocal.m4           config.h.in
+                                  |                          \                |                   |
+                                  |                           \               |                   |
+                                 \|/                           \____autoconf__|                   |
+                              Makefile.in                               |                         |
+                                  |                                     |                         |
+                                  |                                    \|/                        |
+                                  |_________./configure____________configure______./configure_____|           
+                                                  |                                     |
+                                              Makefile                               config.h
+
+@4. autoreconf说明
+    autoreconf [options]   autoreconf --force --install
+    -f, --force
+        Remake all configure scripts, even when newer than their template files.
+    -i, --install
+        Add any default files missing from package by copying versions included with autoconf and automake.
+    GNU autoconf tool. Update configure scripts by running autoconf, autoheader, aclocal, automake, and libtoolize in specified directories and subdirectories. This command is seldom invoked manually. It is usually called automatically from other autoconf tools.
+    
+@5.静态、动态库
+    
+
+
+
+    

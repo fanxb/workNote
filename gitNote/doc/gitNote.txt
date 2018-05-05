@@ -1,158 +1,150 @@
 git服务器的搭建：
-	@1安装git 	
-		sudo apt-get install git
-	@2创建一个git账户
-		sudo adduser git
-	@3创建登陆证书
-		收集所有需要登录用户的公钥（id_rsa.pub文件），把所有公钥导入到/home/git/.ssh/authorized_keys文件里，
-		一行一个。
-	@4初始化git仓库
-		到自定义目录下执行 $sudo git init --bare code.git  git会创建一个裸仓库，裸仓库就是没有工作区，原因是服务器
-		上的仓库是为了多人协作时共享，不允许用户直接登录到服务器去修改工作区，并且服务器上的仓库通常以.git结尾。
-		把owner改为git $sudo chown -R git:git code.git  
-	@5禁止shell登录
-		出于安全考虑，git用户不允许登录shell，通过修改/etc/passwd文件完成。
-		修改： 	git:x:1001:1001:,,,:/home/git/:/bin/bash
-		修改为：git:x:1001:1001:,,,:/home/git/:/usr/bin/git-shell
-		这样git用户可以通过ssh使用git，但无法登录shell
-	@6克隆仓库
-		git clone git@server:/code/code.git
-		
+    @1安装git     
+        sudo apt-get install git
+    @2创建一个git账户
+        sudo adduser git
+    @3创建登陆证书
+        收集所有需要登录用户的公钥（id_rsa.pub文件），把所有公钥导入到/home/git/.ssh/authorized_keys文件里，
+        一行一个。
+    @4初始化git仓库
+        到自定义目录下执行 $sudo git init --bare code.git  git会创建一个裸仓库，裸仓库就是没有工作区，原因是服务器
+        上的仓库是为了多人协作时共享，不允许用户直接登录到服务器去修改工作区，并且服务器上的仓库通常以.git结尾。
+        把owner改为git $sudo chown -R git:git code.git  
+    @5禁止shell登录
+        出于安全考虑，git用户不允许登录shell，通过修改/etc/passwd文件完成。
+        修改：     git:x:1001:1001:,,,:/home/git/:/bin/bash
+        修改为：git:x:1001:1001:,,,:/home/git/:/usr/bin/git-shell
+        这样git用户可以通过ssh使用git，但无法登录shell
+    @6克隆仓库
+        git clone git@server:/code/code.git
+        
 首次运行git前配置：
-	@1配置文件
-		/etc/gitconfig文件：系统中对所有用户都生效的配置文件 $git config --system
-		~/.gitconfig文件：用户配置文件 $git config --global
-		当前项目中的.git/gitconfig文件只对当前项目有效，每个级别的配置都会覆盖上层配置，所有.git/gitconfig回覆盖
-		/etc/gitconfig中的同名变量。
-	@2用户信息
-		git提交时用到的信息
-		git config --global user.email "you@example.com"
-		git config --global user.name "Your Name"
-	@3文本编辑器
-		git config --global code.editor vim
-	@4差异分析工具
-		git config --global merge.tool vimdiff
-	@5查看配置信息
-		git config --list
-	
-	
-		
-
-
+    @1配置文件
+        /etc/gitconfig文件：系统中对所有用户都生效的配置文件 $git config --system
+        ~/.gitconfig文件：用户配置文件 $git config --global
+        当前项目中的.git/gitconfig文件只对当前项目有效，每个级别的配置都会覆盖上层配置，所有.git/gitconfig回覆盖
+        /etc/gitconfig中的同名变量。
+    @2用户信息
+        git提交时用到的信息
+        git config --global user.email "you@example.com"
+        git config --global user.name "Your Name"
+    @3文本编辑器
+        git config --global code.editor vim
+    @4差异分析工具
+        git config --global merge.tool vimdiff
+    @5查看配置信息
+        git config --list
+    
+    
+        
 
 1.创建版本库(repository)
-	什么是版本库？版本库可以看作是一个目录，这个目录里的所有文件都可以被git管理起来，每个文件的
-	修改、删除 、git都能跟踪。
-	命令：git init  //Create an empty Git repository or reinitialize an existing one
-
+    什么是版本库？版本库可以看作是一个目录，这个目录里的所有文件都可以被git管理起来，每个文件的
+    修改、删除 、git都能跟踪。
+    命令：git init  //Create an empty Git repository or reinitialize an existing one
 2.把文件添加到版本库
-	所有的版本控制管理系统都只能跟踪文本文件的改动（包括git），建议使用UTF-8以便实现对多平台的支持。
-	命令：git add file/.  //Add file contents to the index
-		  git commit -m "xxx" //Record changes to the repository
+    所有的版本控制管理系统都只能跟踪文本文件的改动（包括git），建议使用UTF-8以便实现对多平台的支持。
+    命令：git add file/.  //Add file contents to the index
+          git commit -m "xxx" //Record changes to the repository
 3.状态查询：
-		  git status //Show the working tree status
-		  git log (--pretty=oneline)//Show commit logs 
-		  git reflog 查看历史分支的变化
-		  git diff HEAD -- file 查看工作区与版本库的区别
-		  
-		  (use "git add <file>..." to update what will be committed)
-		  (use "git checkout -- <file>..." to discard changes in working directory)
-		  (use "git reset HEAD <file>..." to unstage)
-		  
+          git status //Show the working tree status
+          git log (--pretty=oneline)//Show commit logs 
+          git reflog 查看历史分支的变化
+          git diff HEAD -- file 查看工作区与版本库的区别
+          
+          (use "git add <file>..." to update what will be committed)
+          (use "git checkout -- <file>..." to discard changes in working directory)
+          (use "git reset HEAD <file>..." to unstage)
+          
 4.版本回退
-	命令：git reset  //Reset current HEAD to the specified state
-		  git reset --hard HEAD^(上一个版本)|HEAD^^(上上个版本) HEAD~10(前10个版本)
-		  git reset --hard 4fffef4a1...(版本号不需要写全 commit id)
-		  git checkout -- <file> 丢弃工作区的修改（无--为切换分支命令），从版本区直接回退到工作区
-			@1 file修改后还未add，则回退到最新一次commit状态
-			@2 file修改后已add，则回退到最新一次add状态
-		  git reset HEAD file //unstage 撤销暂存区的修改，从版本库回退到暂存区
-		  
-		  
-		  时间轴：                                                     _____
-																	  |HEAD | 
-		                                                                 |											                
-																		 |
-			 _______________          __________________          ______\|/_______
-			|               |        |                  |        |                |
-	        |				|------->|                  |------->|                |
-			|_______________|        |__________________|        |________________|
-			commit id:xxx...a         commit id:xxx...b           commit id:xxx...c
+    命令：git reset  //Reset current HEAD to the specified state
+          git reset --hard HEAD^(上一个版本)|HEAD^^(上上个版本) HEAD~10(前10个版本)
+          git reset --hard 4fffef4a1...(版本号不需要写全 commit id)
+          git checkout -- <file> 丢弃工作区的修改（无--为切换分支命令），从版本区直接回退到工作区
+            @1 file修改后还未add，则回退到最新一次commit状态
+            @2 file修改后已add，则回退到最新一次add状态
+          git reset HEAD file //unstage 撤销暂存区的修改，从版本库回退到暂存区
+          
+          
+          时间轴：                                                     _____
+                                                                      |HEAD | 
+                                                                         |                 
+                                                                         |
+             _______________          __________________          ______\|/_______
+            |               |        |                  |        |                |
+            |               |------->|                  |------->|                |
+            |_______________|        |__________________|        |________________|
+            commit id:xxx...a         commit id:xxx...b           commit id:xxx...c
 5.版本库
-	工作区的隐藏目录.git是git版本库
-	 ___work___           ___repository________________________________________
-	|	       |         |    _____________             __________________     |    
-	|		   |         |   |             |           |                  |    |
-	|  file    |---add------>| index/stage |--commit-->|   master branch  |    |
-	|          |         |   |_____________|           |__________________|    |        
-	|__________|         |_____________________________________________________|
-	
+    工作区的隐藏目录.git是git版本库
+     ___work___           ___repository________________________________________
+    |          |         |    _____________             __________________     |    
+    |          |         |   |             |           |                  |    |
+    |  file    |---add------>| index/stage |--commit-->|   master branch  |    |
+    |          |         |   |_____________|           |__________________|    |        
+    |__________|         |_____________________________________________________|
+    
 6.删除文件
-	1.git rm file
-	2.git commit -m "delete file"
-	git rm仅删除最新版本文件，误删除时可进行版本回退
-
-	
+    1.git rm file
+    2.git commit -m "delete file"
+    git rm仅删除最新版本文件，误删除时可进行版本回退
+    
 7.远程仓库
-	@1.	在用户主目录下查看.ssh/id_rsa id_rsa.pub文件，复制id_rsa.pub公钥内容并添加到Github网站对应位置，
-		自动生成密钥命令：$ssh-keygen -t rsa -C "youremail@example.com"
-		
-	@2.	在GitHub网站网页New repository，并在本地执行git clone git@github.com:justdoitanyway/sample.git克隆远程仓库或者
-		git clone https://github.com/justdoitanyway/sample.git，Git支持多种协议，包括https，但通过ssh支持的原生git协议速度最快
-		
-	@3.查看当前的远程库
-		要查看当前配置有哪些远程仓库，可以用 git remote 命令，它会列出每个远程库的简短名字。在克隆完某个项目后，
-		至少可以看到一个名为 origin 的远程库，Git 默认使用这个名字来标识你所克隆的原始仓库：
-		$ git remote
-		origin
-		也可以加上 -v 选项（译注：此为 --verbose 的简写，取首字母），显示对应的克隆地址：
-		fxb@ubuntu:~/Git/workNote$ git remote -v
-		origin	git@github.com:justdoitanyway/workNote.git (fetch)
-		origin	git@github.com:justdoitanyway/workNote.git (push)
-		
-	@4.添加远程仓库
-		要添加一个新的远程仓库，可以指定一个简单的名字，以便将来引用，运行 git remote add [shortname] [url]
-		$ git remote
-			origin
-		$ git remote add sample git://github.com/paulboone/ticgit.git
-		$ git remote -v
-			origin  git://github.com/schacon/ticgit.git
-			sample  git://github.com/paulboone/ticgit.git
-			
-	@5.从远程仓库抓取数据
-		$ git fetch [remote-name]
-		此命令会到远程仓库中拉取所有你本地仓库中还没有的数据。运行完成后，你就可以在本地访问该远程仓库中的所有分支，将其中某个分支
-		合并到本地，或者只是取出某个分支，一探究竟。，fetch 命令只是将远端的数据拉到本地仓库，并不自动合并到当前工作分支，只有当你
-		确实准备好了，才能手工合并。
-		如果你有一个分支设置为跟踪一个远程分支，可以使用 git pull 命令来自动的抓取然后合并远程分支到当前分支。 这对你来说可能
-		是一个更简单或更舒服的工作流程；默认情况下，git clone 命令会自动设置本地 master 分支跟踪克隆的远程仓库的 master 分支
-		（或不管是什么名字的默认分支）。 运行 git pull 通常会从最初克隆的服务器上抓取数据并自动尝试合并到当前所在的分支。
-		
-	@6.推送数据到远程仓库
-		git push [remote-name] [branch-name]
-		$ git push origin master
-		只有在所克隆的服务器上有写权限，或者同一时刻没有其他人在推数据，这条命令才会如期完成任务。如果在你推数据前，已经有其他人
-		推送了若干更新，那你的推送操作就会被驳回。你必须先把他们的更新抓取到本地，合并到自己的项目中，然后才可以再次推送。
-	@7.查看远程仓库信息
-		我们可以通过命令 git remote show [remote-name] 查看某个远程仓库的详细信息，比如要看所克隆的 origin 仓库，可以运行：
-		$ git remote show origin
-		* remote origin
-		  URL: git://github.com/schacon/ticgit.git
-		  Remote branch merged with 'git pull' while on branch master
-			master
-		  Tracked remote branches
-			master
-			ticgit
-	@8.远程仓库的删除和重命名
-		在新版 Git 中可以用 git remote rename 命令修改某个远程仓库在本地的简称，比如想把 pb 改成 paul，可以这么运行：
-		$ git remote rename pb paul
-		$ git remote
-		origin
-		paul
-		
-		碰到远端仓库服务器迁移，或者原来的克隆镜像不再使用，又或者某个参与者不再贡献代码，那么需要移除对应的远端仓库，
-		可以运行 git remote rm 命令：
-		$ git remote rm paul
-		$ git remote
-		origin
-	
+    @1. 在用户主目录下查看.ssh/id_rsa id_rsa.pub文件，复制id_rsa.pub公钥内容并添加到Github网站对应位置，
+        自动生成密钥命令：$ssh-keygen -t rsa -C "youremail@example.com"
+        
+    @2. 在GitHub网站网页New repository，并在本地执行git clone 
+        git@github.com:justdoitanyway/sample.git克隆远程仓库或者git clone https://github.com/justdoitanyway/sample.git，
+        Git支持多种协议，包括https，但通过ssh支持的原生git协议速度最快
+        
+    @3.查看当前的远程库
+        要查看当前配置有哪些远程仓库，可以用 git remote 命令，它会列出每个远程库的简短名字。在克隆完某个项目后，
+        至少可以看到一个名为 origin 的远程库，Git 默认使用这个名字来标识你所克隆的原始仓库：
+        $ git remote
+        origin
+        也可以加上 -v 选项（译注：此为 --verbose 的简写，取首字母），显示对应的克隆地址：
+        fxb@ubuntu:~/Git/workNote$ git remote -v
+        origin    git@github.com:justdoitanyway/workNote.git (fetch)
+        origin    git@github.com:justdoitanyway/workNote.git (push)
+        
+    @4.添加远程仓库
+        要添加一个新的远程仓库，可以指定一个简单的名字，以便将来引用，运行 git remote add [shortname] [url]
+        $ git remote
+            origin
+        $ git remote add sample git://github.com/paulboone/ticgit.git
+        $ git remote -v
+            origin  git://github.com/schacon/ticgit.git
+            sample  git://github.com/paulboone/ticgit.git
+            
+    @5.从远程仓库抓取数据
+        $ git fetch [remote-name]     此命令会到远程仓库中拉取所有你本地仓库中还没有的数据。运行完成后，你就可以在本地访问该远程仓库中的所有分支将其中某个分支合并到本地，或者只是取出某个分支，一探究竟。fetch命令只是将远端的数据拉到本地仓库，并不自动合并到当前工作分支，只有当你确实准备好了，才能手工合并。如果你有一个分支设置为跟踪一个远程分支，可以使用 git  pull命令来自动的抓取然后合并远程分支到当前分支。这对你来说可能是一个更简单或更舒服的工作流程；默认情况下，
+        git clone 命令会自动设置本地 master 分支跟踪克隆的远程仓库的 master 分支（或不管是什么名字的默认分支）。 运行 git pull  通常会从最初克隆的服务器上抓取数据并自动尝试合并到当前所在的分支。
+        
+    @6.推送数据到远程仓库
+        git push [remote-name] [branch-name]
+        $ git push origin master
+        只有在所克隆的服务器上有写权限，或者同一时刻没有其他人在推数据，这条命令才会如期完成任务。如果在你推数据前，已经有其他人
+        推送了若干更新，那你的推送操作就会被驳回。你必须先把他们的更新抓取到本地，合并到自己的项目中，然后才可以再次推送。
+    @7.查看远程仓库信息
+        我们可以通过命令 git remote show [remote-name] 查看某个远程仓库的详细信息，比如要看所克隆的 origin 仓库，可以运行：
+        $ git remote show origin
+        * remote origin
+          URL: git://github.com/schacon/ticgit.git
+          Remote branch merged with 'git pull' while on branch master
+            master
+          Tracked remote branches
+            master
+            ticgit
+    @8.远程仓库的删除和重命名
+        在新版 Git 中可以用 git remote rename 命令修改某个远程仓库在本地的简称，比如想把 pb 改成 paul，可以这么运行：
+        $ git remote rename pb paul
+        $ git remote
+        origin
+        paul
+        
+        碰到远端仓库服务器迁移，或者原来的克隆镜像不再使用，又或者某个参与者不再贡献代码，那么需要移除对应的远端仓库
+        可以运行 git remote rm 命令：
+        $ git remote rm paul
+        $ git remote
+        origin
+    
