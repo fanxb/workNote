@@ -1,5 +1,6 @@
 @1.automake
-    Automake is a tool for automatically generating Makefile.in files compliant with the GNU Coding Standards. Automake requires the use of Autoconf.
+    Automake is a tool for automatically generating Makefile.in files compliant with the GNU Coding Standards. 
+    Automake requires the use of Autoconf.
     
     目前automake支持三种目录层次：flat、shallow和deep。
     1)    flat指的是所有文件都位于同一个目录中。
@@ -9,10 +10,14 @@
     就是主要源文件在当前目录中，而其它一些实现各部分功能的源文件位于各自不同的目录。automake本身就是这一类。
         
     3)    deep指的是所有源代码都被储存在子目录中；顶层目录主要包含配置信息。
-    就是所有源文件及自己写的头文件位于当前目录的一个子目录中，而当前目录里没有任何源文件。 GNU cpio和GNU tar就是这一类。
-
+    就是所有源文件及自己写的头文件位于当前目录的一个子目录中，而当前目录里没有任何源文件。 GNU cpio和GNU tar
+    就是这一类。
+    
 @2.autoconf
-    Autoconf is an extensible package of M4 macros that produce shell scripts to automatically configure software source code packages. These scripts can adapt the packages to many kinds of UNIX-like systems without manual user intervention. Autoconf creates a configuration script for a package from a template file that lists the operating system features that the package can use, in the form of M4 macro calls.
+    Autoconf is an extensible package of M4 macros that produce shell scripts to automatically configure software 
+    source code packages. These scripts can adapt the packages to many kinds of UNIX-like systems without manual 
+    user intervention. Autoconf creates a configuration script for a package from a template file that lists the
+    operating system features that the package can use, in the form of M4 macro calls.
     
 @3Makefile生成流程图
                                                        source code
@@ -23,7 +28,7 @@
                                                       configure.scan   
                                                             |
                                                             |
-                                                           edit
+                                                           edit------------->（早期使用configure.in）
                                                            \|/
            Makefile.am                                 configure.ac--------------------------------        
                  \                                    /     |                 |                   |
@@ -41,15 +46,75 @@
                                                   |                                     |
                                               Makefile                               config.h
 
+                                              
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.69]) //宏用于声明文件要求的autoconf版本
+AC_INIT([ts2017], [v0.1], [fxb_mail@163.com])
+AM_INIT_AUTOMAKE()//使用automake自动生成Makefile
+AC_CONFIG_SRCDIR([config.h.in])//用于检测源码目录的有效性，任选一个源码文件即可
+AC_CONFIG_HEADERS([config.h])//用于生成config.h文件供autoheader使用
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+
+AC_PROG_RANLIB  #静态库
+AC_PROG_LIBTOOL #使用libtool生成动态库
+
+AC_CONFIG_FILES([Makefile
+                 interface_lib/Makefile
+                 sample/Makefile
+                 zdmsd/Makefile
+                 zjlog/Makefile])
+
+AC_CONFIG_SUBDIRS([3rd/libevent/libevent-2.1.8-stable
+                   3rd/hardware])
+AC_OUTPUT
+
+  
 @4. autoreconf说明
     autoreconf [options]   autoreconf --force --install
     -f, --force
         Remake all configure scripts, even when newer than their template files.
     -i, --install
         Add any default files missing from package by copying versions included with autoconf and automake.
-    GNU autoconf tool. Update configure scripts by running autoconf, autoheader, aclocal, automake, and libtoolize in specified directories and subdirectories. This command is seldom invoked manually. It is usually called automatically from other autoconf tools.
+    GNU autoconf tool. Update configure scripts by running autoconf, autoheader, aclocal, automake, and libtoolize
+    in specified directories and subdirectories. This command is seldom invoked manually. It is usually called 
+    automatically from other autoconf tools.
     
-@5.静态、动态库
+@5.可执行文件、静态、动态库
+    0.变量说明：
+        1>SUBDIRS当前目录下的哪些子目录需要编译
+        2>AM_CPPFLAGS 、AM_CFLAGS
+            预定义变量,编译器的附加参数AM_CPPFLAGS = -I${top_srcdir}/src  AM_CFLAGS = -I${top_srcdir}/src  
+        3>$(top_srcdir)工程最顶层目录 $(top_builddir)定义生成目标文件的最上层目录
+    1.可执行文件：
+        AUTOMAKE_OPTIONS = foreign subdir-objects
+        AM_CPPFLAGS     = $(INCLUDEDIR) //编译器的-I参数
+        bin_PROGRAMS    = zdmsd
+        zdmsd_SOURCES   = zdmsd.c ../device/device.c
+        zdmsd_LDADD     = -llog -L$(BUILD_DIR)/zjlog/ \
+                                          -ludp -L$(BUILD_DIR)/3rd/hardware/device/udp/ \
+                                          -levent -L$(BUILD_DIR)/3rd/libevent/libevent-2.1.8-stable \
+                                          -lpthread 
+        zdmsd_LDFLAGS   = -Wl,-rpath=../lib 
+    2.静态库：
+        AUTOMAKE_OPTIONS=foreign
+        lib_LIBRARIES=libxxx.a
+        libxxx_a_SOURCES = xxx.c
+        libxxx_a_LDADD =
+        libxxx_a_LDFLAGS =
+        include_HEADERS =
+    3.动态库：
+        AUTOMAKE_OPTIONS=foreign
+        lib_LTLIBRARIES=libxx.la
+        libxx_la_SOURCES=xx.c
+        include_HEADERS=xx.h //make install时会复制到安装目录的include目录中。
+        在configure.ac中添加AC_PROG_LIBTOOL表示用libtool生成动态库。
     
 
 
