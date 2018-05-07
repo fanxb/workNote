@@ -34,6 +34,8 @@ git服务器的搭建：
         git config --global merge.tool vimdiff
     @5查看配置信息
         git config --list
+    @6删除配置信息
+        git config --global  --unset code.editor
     
     
         

@@ -19,7 +19,7 @@
     user intervention. Autoconf creates a configuration script for a package from a template file that lists the
     operating system features that the package can use, in the form of M4 macro calls.
     
-@3Makefile生成流程图
+@3.Makefile生成流程图
                                                        source code
                                                             |
                                                             |
@@ -106,7 +106,7 @@ AC_OUTPUT
         AUTOMAKE_OPTIONS=foreign
         lib_LIBRARIES=libxxx.a
         libxxx_a_SOURCES = xxx.c
-        libxxx_a_LDADD =
+        libxxx_a_LDADD =  -lz ../lib/libxxx.la  #依赖的库文件
         libxxx_a_LDFLAGS =
         include_HEADERS =
     3.动态库：
@@ -115,6 +115,8 @@ AC_OUTPUT
         libxx_la_SOURCES=xx.c
         include_HEADERS=xx.h //make install时会复制到安装目录的include目录中。
         在configure.ac中添加AC_PROG_LIBTOOL表示用libtool生成动态库。
+        注：libtoolize 提供了一种标准的方式来将libtool 支持加入一个软件包，而GNU libtool 是一个通用库支持脚本，
+        将使用动态库的复杂性隐藏在统一、可移植的接口中。
     
 
 
