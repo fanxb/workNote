@@ -22,7 +22,7 @@ git服务器的搭建：
     @1配置文件
         /etc/gitconfig文件：系统中对所有用户都生效的配置文件 $git config --system
         ~/.gitconfig文件：用户配置文件 $git config --global
-        当前项目中的.git/gitconfig文件只对当前项目有效，每个级别的配置都会覆盖上层配置，所有.git/gitconfig回覆盖
+        当前项目中的.git/gitconfig文件只对当前项目有效，每个级别的配置都会覆盖上层配置，所有.git/gitconfig会覆盖
         /etc/gitconfig中的同名变量。
     @2用户信息
         git提交时用到的信息
@@ -46,7 +46,7 @@ git服务器的搭建：
     命令：git init  //Create an empty Git repository or reinitialize an existing one
 2.把文件添加到版本库
     所有的版本控制管理系统都只能跟踪文本文件的改动（包括git），建议使用UTF-8以便实现对多平台的支持。
-    命令：git add file/.  //Add file contents to the index
+    命令：git add file | .  //Add file contents to the index
           git commit -m "xxx" //Record changes to the repository
 3.状态查询：
           git status //Show the working tree status
